@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Minha conta · Pirulecos</title>
+<meta name="theme-color" content="#FFF9EF">
+<link rel="icon" href="assets/icone-32.png"><link rel="apple-touch-icon" href="assets/icone-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="wrap" id="root"></main>
+<script src="app.js"></script>
+<script>
+(function () {
+  var P = PZ; P.header(); P.footer();
+  var root = document.getElementById('root'), next = new URLSearchParams(location.search).get('next');
+  var mode = location.hash === '#entrar' ? 'in' : (location.hash === '#criar' ? 'up' : 'up');
+  var sizeOpts = P.SIZES.map(function (s) { return '<option' + (s === '4' ? ' selected' : '') + '>' + s + '</option>'; }).join('');
+  function guest() {
+    root.innerHTML = '<div style="max-width:520px;margin:0 auto;padding:32px 0 8px">' +
+      '<div style="text-align:center" class="rv"><img src="assets/logo-ilustracao.webp" alt="" style="width:170px;margin:0 auto;animation:floaty 5s ease-in-out infinite"><h1 class="page-title" style="margin-top:8px">' + (mode === 'up' ? 'Crie sua conta' : 'Que bom te ver de novo') + '</h1>' +
+      '<p class="lead">' + (mode === 'up' ? 'Ganhe 10% na primeira compra e um presente no aniversário do seu pequeno.' : 'Entre para ver seus cupons e pedidos.') + '</p></div>' +
+      '<div style="text-align:center" class="rv"><div class="seg" role="tablist"><button role="tab" aria-selected="' + (mode === 'up') + '" class="' + (mode === 'up' ? 'on' : '') + '" data-m="up">Criar conta</button><button role="tab" aria-selected="' + (mode === 'in') + '" class="' + (mode === 'in' ? 'on' : '') + '" data-m="in">Entrar</button></div></div>' +
+      (mode === 'up' ?
+      '<form class="box stack rv" id="f" novalidate>' +
+        '<div class="field"><label for="n">Seu nome</label><input class="input" id="n" autocomplete="name" required></div>' +
+        '<div class="field"><label for="e">E-mail</label><input class="input" id="e" type="email" autocomplete="email" required></div>' +
+        '<div class="field"><label for="s">Crie uma senha</label><input class="input" id="s" type="password" autocomplete="new-password" minlength="6" placeholder="Pelo menos 6 caracteres" required></div>' +
+        '<div style="background:var(--pink-t);border-radius:18px;padding:16px" class="stack"><b>Sobre a criança <span style="font-weight:600;color:#7E2248">(para o presente)</span></b>' +
+          '<div class="row2"><div class="field"><label for="kn">Nome</label><input class="input" id="kn" placeholder="Opcional"></div><div class="field"><label for="ks">Tamanho</label><select class="input" id="ks">' + sizeOpts + '</select></div></div>' +
+          '<div class="field"><label for="kb">Aniversário</label><input class="input" id="kb" type="date"></div></div>' +
+        '<label style="display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#6E5A45"><input type="checkbox" id="o" checked style="width:20px;height:20px;margin:2px 0 0;accent-color:#C65A0E;flex-shrink:0">Aceito receber cupons e avisos por e-mail, conforme a política de privacidade.</label>' +
+        '<div class="err" id="err"></div><button class="btn block" style="min-height:56px;font-size:17px">Criar conta e pegar meu cupom</button></form>' :
+      '<form class="box stack rv" id="f" novalidate>' +
+        '<div class="field"><label for="e">E-mail</label><input class="input" id="e" type="email" autocomplete="email" required></div>' +
+        '<div class="field"><label for="s">Senha</label><input class="input" id="s" type="password" autocomplete="current-password" required></div>' +
+        '<div class="err" id="err"></div><button class="btn block" style="min-height:56px;font-size:17px">Entrar</button></form>') +
+      '</div>';
+    P.reveal(root);
+    P.$$('[data-m]', root).forEach(function (b) { b.onclick = function () { mode = b.dataset.m; history.replaceState(null, '', (next ? '?next=' + next : location.pathname) + (mode === 'up' ? '#criar' : '#entrar')); guest(); }; });
+    var f = document.getElementById('f'), err = document.getElementById('err');
+    f.onsubmit = function (ev) {
+      ev.preventDefault(); var v = function (id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
+      if (mode === 'up') {
+        if (!v('n')) return shake(err, 'Conta seu nome pra gente.');
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v('e'))) return shake(err, 'Esse e-mail parece incompleto.');
+        if (v('s').length < 6) return shake(err, 'A senha precisa de pelo menos 6 caracteres.');
+        var kids = v('kn') ? [{ name: v('kn'), size: v('ks'), birth: v('kb') }] : [];
+        var r = P.signup({ name: v('n'), email: v('e'), pass: v('s'), kids: kids, optin: document.getElementById('o').checked });
+        if (r) return shake(err, r);
+        P.confetti(); P.toast(P.I.gift + ' Conta criada! Seu cupom BEMVINDO10 já está aqui', 3500);
+      } else {
+        var r2 = P.login(v('e'), v('s')); if (r2) return shake(err, r2);
+        P.toast('Bem-vinda de volta!');
+      }
+      if (next) { setTimeout(function () { location.href = next; }, 900); return; }
+      setTimeout(function () { location.hash = ''; refreshHeader(); account(); window.scrollTo({ top: 0, behavior: 'smooth' }); }, 300);
+    };
+  }
+  function shake(el, msg) { el.textContent = msg; el.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(0)' }], { duration: 300 }); return false; }
+  function refreshHeader() { P.$$('.ticker,.header,.drawer').forEach(function (e) { e.remove(); }); P.header(); }
+  function account() {
+    var u = P.me(); if (!u) return guest();
+    var kids = u.kids || [], cps = P.coupons(u).filter(function (c) { return c.mine; });
+    var soon = kids.map(function (k) { return { k: k, d: P.daysToBirthday(k.birth) }; }).filter(function (x) { return x.d !== null; }).sort(function (a, b) { return a.d - b.d; })[0];
+    root.innerHTML = '<h1 class="page-title rv">Oi, ' + P.esc(u.name.split(' ')[0]) + '!</h1><p class="lead rv">Aqui ficam seus cupons, suas crianças e seus pedidos.</p>' +
+      '<div class="acc"><div class="stack">' +
+      '<div class="box rv" style="display:flex;gap:14px;align-items:center"><span class="avatar">' + P.esc(u.name[0] || '?').toUpperCase() + '</span><div style="min-width:0"><b style="display:block">' + P.esc(u.name) + '</b><small style="color:#6E5A45;word-break:break-all">' + P.esc(u.email) + '</small></div></div>' +
+      (soon ? '<div class="countdown rv"><div class="n"><b>' + soon.d + '</b><small>' + (soon.d === 1 ? 'DIA' : 'DIAS') + '</small></div><div><b>' + (soon.d === 0 ? 'Hoje é o aniversário de ' + P.esc(soon.k.name) + '!' : 'Aniversário de ' + P.esc(soon.k.name) + ' vem aí') + '</b><br><small style="color:#5E3A49">' + (soon.d <= 30 ? 'O cupom de presente já está liberado aqui.' : 'O cupom de presente aparece 30 dias antes.') + '</small></div></div>' : '') +
+      '<button class="btn ghost rv" id="out">Sair da conta</button></div>' +
+      '<div class="stack">' +
+      '<section class="box rv"><h2 style="font-size:22px;margin-bottom:12px">Meus cupons</h2><div class="stack">' + (cps.length ? cps.map(function (c) { return '<div class="coupon"><span class="pct" style="background:var(--orange-t);color:#8A3A06">' + c.pct + '%</span><div style="flex:1;min-width:0"><b style="letter-spacing:1px">' + c.code + '</b><br><small style="color:#6E5A45">' + P.esc(c.label) + '</small></div><button class="codebtn" data-copy="' + c.code + '">Copiar</button></div>'; }).join('') : '<p style="margin:0;color:#6E5A45">Você já usou seus cupons. Novos aparecem aqui nas datas especiais.</p>') + '</div></section>' +
+      '<section class="box rv"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><h2 style="font-size:22px">Minhas crianças</h2><button class="btn sm dark" id="addk">+ Adicionar</button></div>' +
+      '<form id="kf" class="stack" style="display:none;background:var(--pink-t);border-radius:18px;padding:16px;margin:10px 0"><div class="row2"><div class="field"><label for="kn">Nome</label><input class="input" id="kn" required></div><div class="field"><label for="ks">Tamanho</label><select class="input" id="ks">' + sizeOpts + '</select></div></div><div class="field"><label for="kb">Aniversário</label><input class="input" id="kb" type="date"></div><div class="err" id="kerr"></div><button class="btn pink">Salvar criança</button></form>' +
+      (kids.length ? kids.map(function (k, i) { return '<div class="kid"><span class="avatar" style="width:48px;height:48px;font-size:22px">' + P.esc(k.name[0]).toUpperCase() + '</span><div style="flex:1"><b>' + P.esc(k.name) + '</b><br><small style="color:#6E5A45">Tamanho ' + P.esc(k.size) + (k.birth ? ' · faz ' + P.ageNext(k.birth) + ' anos em ' + new Date(k.birth + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' }) : '') + '</small></div><button class="link" data-delk="' + i + '" aria-label="Remover ' + P.esc(k.name) + '">' + P.I.trash + '</button></div>'; }).join('') : '<p style="margin:8px 0 0;color:#6E5A45">Adicione seu pequeno para ganhar presente no aniversário e saber quando chegar peça no tamanho dele.</p>') +
+      '</section>' +
+      '<section class="box rv"><h2 style="font-size:22px;margin-bottom:12px">Meus pedidos</h2><div class="stack">' + ((u.orders || []).length ? u.orders.map(function (o) { return '<div class="order"><div style="display:flex;justify-content:space-between;gap:8px"><b>Pedido #' + o.n + '</b><span class="status" style="background:var(--green-t);color:var(--green)">' + P.esc(o.status) + '</span></div><small style="color:#6E5A45">' + new Date(o.at).toLocaleDateString('pt-BR') + ' · ' + o.items.map(function (i) { return P.esc(i.name); }).join(', ') + '</small><small style="color:#6E5A45">' + o.pay + ' · ' + o.ship + ' · <b style="color:#3B2A1A">' + P.money(o.total) + '</b></small><small style="color:var(--blue);font-weight:700">Etiqueta gerada · aguardando postagem nos Correios</small></div>'; }).join('') : '<p style="margin:0;color:#6E5A45">Nenhum pedido ainda. <a href="index.html#vitrine">Ver o que chegou</a></p>') + '</div></section>' +
+      '</div></div>';
+    P.reveal(root);
+    document.getElementById('out').onclick = function () { P.logout(); P.toast('Você saiu da conta'); refreshHeader(); mode = 'in'; guest(); };
+    P.$$('[data-copy]', root).forEach(function (b) { b.onclick = function () { try { navigator.clipboard.writeText(b.dataset.copy); } catch (e) {} P.LS.set('coupon', b.dataset.copy); b.textContent = 'Copiado!'; P.toast('Cupom ' + b.dataset.copy + ' copiado. Ele já vai aplicado na sacola.'); }; });
+    var kf = document.getElementById('kf');
+    document.getElementById('addk').onclick = function () { kf.style.display = kf.style.display === 'none' ? 'flex' : 'none'; if (kf.style.display === 'flex') { kf.animate([{ opacity: 0, transform: 'translateY(-8px)' }, { opacity: 1, transform: 'none' }], { duration: 250 }); document.getElementById('kn').focus(); } };
+    kf.onsubmit = function (e) { e.preventDefault(); var n = document.getElementById('kn').value.trim(); if (!n) { document.getElementById('kerr').textContent = 'Qual o nome da criança?'; return; } var uu = P.me(); uu.kids = (uu.kids || []).concat([{ name: n, size: document.getElementById('ks').value, birth: document.getElementById('kb').value }]); P.saveMe(uu); P.toast(P.I.gift + ' ' + P.esc(n) + ' cadastrada!'); account(); };
+    P.$$('[data-delk]', root).forEach(function (b) { b.onclick = function () { var uu = P.me(); uu.kids.splice(Number(b.dataset.delk), 1); P.saveMe(uu); account(); }; });
+  }
+  account();
+})();
+</script>
+</body>
+</html>

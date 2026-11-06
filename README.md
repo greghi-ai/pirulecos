@@ -7,7 +7,6 @@ Loja online da Pirulecos, um brechó infantil em que **cada peça é única**.
 ## Links
 
 - **Site (protótipo no ar):** https://greghi-ai.github.io/pirulecos/
-- **Lista de telas:** https://greghi-ai.github.io/pirulecos/telas.html
 - **Telas (design):** https://claude.ai/artifact/1emumT97w1mJPCJEMpH23Z
 - **Apresentação para a cliente:** https://claude.ai/artifact/GEfmPU3nCr1Ma1aBnez7LN
 
@@ -24,6 +23,21 @@ Loja online da Pirulecos, um brechó infantil em que **cada peça é única**.
 - Painel no celular para a dona cadastrar as peças
 
 Detalhes das regras e decisões: [docs/plano.md](docs/plano.md).
+
+## Protótipo funcional (docs/)
+
+Site estático, sem servidor: tudo fica salvo no navegador de quem usa (localStorage).
+
+| Página | O que faz |
+|---|---|
+| `index.html` | Vitrine com filtro por tamanho e categoria, busca, convite de cadastro na 1ª visita |
+| `peca.html?id=` | Página da peça, reserva na sacola, cálculo de frete (simulado) |
+| `sacola.html` | Reserva de 15 min por peça, cupom, PAC/SEDEX, Pix ou cartão, pedido confirmado e peça vira VENDIDO |
+| `conta.html` | Criar conta, entrar, crianças, contagem para o aniversário, cupons e pedidos |
+| `cupons.html` | Cupons públicos e exclusivos |
+| `loja.html` | Área da loja: cadastrar peça com foto, pedidos, etiqueta, restaurar demonstração |
+
+Cupons de teste: `BEMVINDO10` (conta nova), `FRETEPIRU` (acima de R$ 150, PAC), `KIT3` (3 peças), `NIVER-NOME` (aniversário em até 30 dias).
 
 ## Stack prevista
 
@@ -48,7 +62,7 @@ Detalhes das regras e decisões: [docs/plano.md](docs/plano.md).
 assets/          logo e imagens da marca
 design/telas/    telas do design (arquivos .dc.html do canvas)
 apresentacao/    slides da proposta para a cliente
-docs/            protótipo publicado no GitHub Pages + plano.md
+docs/            loja funcional (protótipo) publicada no GitHub Pages + plano.md
 ```
 
 O código do site entra em seguida, na raiz do repositório.

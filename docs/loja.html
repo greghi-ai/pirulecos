@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Área da loja · Pirulecos</title>
+<meta name="theme-color" content="#FFF9EF">
+<link rel="icon" href="assets/icone-32.png"><link rel="apple-touch-icon" href="assets/icone-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="wrap" id="root"></main>
+<script src="app.js"></script>
+<script>
+(function () {
+  var P = PZ; P.header(); P.footer();
+  var root = document.getElementById('root');
+  var f = { photos: [], cat: 'Menina', size: '4', cond: 'Ótimo estado', tint: 'rosa', kind: 'dress' };
+  var pills = function (name, list, cur) { return '<div class="pill-group" role="group" aria-label="' + name + '">' + list.map(function (x) { return '<button type="button" class="chip' + (x === cur ? ' on' : '') + '" aria-pressed="' + (x === cur) + '" data-' + name + '="' + x + '">' + x + '</button>'; }).join('') + '</div>'; };
+  var kinds = { dress: 'Vestido', tee: 'Camiseta', pants: 'Calça', body: 'Body', jacket: 'Casaco' };
+  function draw() {
+    var all = P.products(), orders = P.LS.get('orders', []);
+    root.innerHTML = '<div class="rv" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px"><div><h1 class="page-title">Área da loja</h1><p class="lead" style="margin:0">Cadastre peças, acompanhe vendas e etiquetas.</p></div><span class="tag" style="background:var(--ink);color:var(--cream)">No site real, só você entra aqui, com senha</span></div>' +
+      '<div class="bag" style="margin-top:24px"><form class="box stack rv" id="nf" novalidate><h2 style="font-size:24px">Nova peça</h2>' +
+      '<div class="field"><label>Fotos <span style="font-weight:600;color:#6E5A45">(frente, costas, etiqueta, detalhe)</span></label><div class="photos">' + [0, 1, 2, 3].map(function (i) { return '<label class="ph">' + (f.photos[i] ? '<img src="' + f.photos[i] + '" alt="Foto ' + (i + 1) + '">' : '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3B2A1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>') + '<input type="file" accept="image/*" data-ph="' + i + '" aria-label="Foto ' + (i + 1) + '"></label>'; }).join('') + '</div><small style="color:#6E5A45">Sem foto, a peça aparece com uma ilustração.</small></div>' +
+      '<div class="field"><label for="nm">Nome da peça</label><input class="input" id="nm" placeholder="Ex.: Vestido de malha florido" value="' + P.esc(f.name || '') + '"></div>' +
+      '<div class="field"><label>Tipo</label>' + pills('kind', Object.keys(kinds).map(function (k) { return kinds[k]; }), kinds[f.kind]) + '</div>' +
+      '<div class="field"><label>Para</label>' + pills('cat', ['Menina', 'Menino', 'Bebê'], f.cat) + '</div>' +
+      '<div class="field"><label>Tamanho</label>' + pills('size', P.SIZES, f.size) + '</div>' +
+      '<div class="field"><label>Estado</label>' + pills('cond', ['Como novo', 'Ótimo estado', 'Bom estado'], f.cond) + '</div>' +
+      '<div class="field"><label>Cor do fundo</label><div class="pill-group">' + Object.keys(P.TINTS).map(function (t) { return '<button type="button" data-tint="' + t + '" aria-label="' + t + '" aria-pressed="' + (t === f.tint) + '" style="width:44px;height:44px;border-radius:50%;border:3px solid ' + (t === f.tint ? '#3B2A1A' : '#fff') + ';background:' + P.TINTS[t][0] + ';cursor:pointer;transition:transform .2s"></button>'; }).join('') + '</div></div>' +
+      '<div class="row2"><div class="field"><label for="pr">Preço (R$)</label><input class="input" id="pr" inputmode="decimal" placeholder="39,90" value="' + P.esc(f.price || '') + '"></div><div class="field"><label for="pc">Pacote</label><select class="input" id="pc"><option>Pequeno</option><option>Médio</option><option>Grande</option></select></div></div>' +
+      '<div class="field"><label for="ds">Detalhes do estado <span style="font-weight:600;color:#6E5A45">(opcional)</span></label><textarea class="input" id="ds" rows="2" placeholder="Ex.: pequena marca de uso na barra">' + P.esc(f.desc || '') + '</textarea></div>' +
+      '<div class="err" id="err"></div><button class="btn block" style="min-height:56px;font-size:17px">Publicar na loja</button></form>' +
+      '<div class="stack">' +
+      '<section class="box rv"><h2 style="font-size:22px;margin-bottom:8px">Pedidos</h2>' + (orders.length ? orders.map(function (o, i) { return '<div class="order" style="margin-top:10px"><div style="display:flex;justify-content:space-between;gap:8px"><b>#' + o.n + ' · ' + P.esc(o.who) + '</b><b>' + P.money(o.total) + '</b></div><small style="color:#6E5A45">' + o.items.map(function (x) { return P.esc(x.name); }).join(', ') + ' · ' + o.ship + '</small>' + (o.posted ? '<span class="status" style="background:var(--blue-t);color:var(--blue)">Postado</span>' : '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><button class="btn sm dark" data-print="' + i + '">Imprimir etiqueta</button><button class="btn sm ghost" data-post="' + i + '">Marcar como postado</button></div>') + '</div>'; }).join('') : '<p style="margin:0;color:#6E5A45">Quando alguém comprar, o pedido aparece aqui com a etiqueta pronta.</p>') + '</section>' +
+      '<section class="box rv"><h2 style="font-size:22px;margin-bottom:4px">Peças (' + all.filter(function (p) { return !p.sold; }).length + ' à venda)</h2>' + all.map(function (p) { return '<div class="mini"><span class="thumb" style="width:48px;height:58px;border-radius:10px;background:' + P.tintBg(p) + '">' + P.art(p, 32) + '</span><div style="flex:1;min-width:0"><b style="display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + P.esc(p.name) + '</b><small style="color:#6E5A45">Tam. ' + P.esc(p.size) + ' · ' + P.money(p.price) + (p.sold ? ' · <b style="color:#3B2A1A">vendida</b>' : '') + '</small></div><button class="link" data-del="' + p.id + '" aria-label="Remover ' + P.esc(p.name) + '">' + P.I.trash + '</button></div>'; }).join('') + '</section>' +
+      '<button class="link rv" id="reset" style="align-self:center">Restaurar a demonstração (apaga cadastros e compras deste navegador)</button>' +
+      '</div></div>';
+    P.reveal(root);
+    ['kind', 'cat', 'size', 'cond'].forEach(function (k) { P.$$('[data-' + k + ']', root).forEach(function (b) { b.onclick = function () { keep(); var v = b.dataset[k]; if (k === 'kind') v = Object.keys(kinds).filter(function (x) { return kinds[x] === v; })[0]; f[k] = v; draw(); }; }); });
+    P.$$('[data-tint]', root).forEach(function (b) { b.onclick = function () { keep(); f.tint = b.dataset.tint; draw(); }; });
+    P.$$('[data-ph]', root).forEach(function (inp) { inp.onchange = function () { var file = inp.files[0]; if (!file) return; keep(); shrink(file, function (url) { f.photos[Number(inp.dataset.ph)] = url; draw(); }); }; });
+    P.$$('[data-del]', root).forEach(function (b) { b.onclick = function () { var id = b.dataset.del, ex = P.LS.get('extra', []); if (ex.some(function (x) { return x.id === id; })) P.LS.set('extra', ex.filter(function (x) { return x.id !== id; })); else { var r = P.LS.get('removed', []); r.push(id); P.LS.set('removed', r); } P.toast('Peça removida da loja'); draw(); }; });
+    P.$$('[data-print]', root).forEach(function (b) { b.onclick = function () { P.toast('Etiqueta enviada para impressão (simulação)'); }; });
+    P.$$('[data-post]', root).forEach(function (b) { b.onclick = function () { var o = P.LS.get('orders', []); o[Number(b.dataset.post)].posted = true; P.LS.set('orders', o); P.toast('Pedido marcado como postado. A cliente recebe o rastreio.'); draw(); }; });
+    document.getElementById('reset').onclick = function () { if (!confirmReset()) return; };
+    document.getElementById('nf').onsubmit = function (e) {
+      e.preventDefault(); keep(); var err = document.getElementById('err');
+      var price = parseFloat(String(f.price || '').replace(/\./g, '').replace(',', '.'));
+      if (!f.name) { err.textContent = 'Dê um nome para a peça.'; return; }
+      if (!(price > 0)) { err.textContent = 'Coloque o preço, por exemplo 39,90.'; return; }
+      var p = { id: 'n' + Date.now(), name: f.name, size: f.size, cat: f.cat, cond: f.cond, price: price, kind: f.kind, tint: f.tint, desc: f.desc || 'Peça revisada e higienizada.', photo: f.photos.filter(Boolean)[0] || null, isNew: true };
+      var ex = P.LS.get('extra', []); ex.unshift(p); P.LS.set('extra', ex);
+      P.confetti(); P.toast(P.I.check + ' Publicada! Quem tem criança tamanho ' + P.esc(f.size) + ' vai ser avisado.', 3500);
+      f = { photos: [], cat: f.cat, size: f.size, cond: 'Ótimo estado', tint: f.tint, kind: f.kind }; draw();
+    };
+  }
+  function keep() { var g = function (id) { var el = document.getElementById(id); return el ? el.value : ''; }; f.name = g('nm').trim(); f.price = g('pr').trim(); f.desc = g('ds').trim(); }
+  function shrink(file, cb) { var r = new FileReader(); r.onload = function () { var img = new Image(); img.onload = function () { var s = Math.min(1, 700 / Math.max(img.width, img.height)), c = document.createElement('canvas'); c.width = img.width * s; c.height = img.height * s; c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); cb(c.toDataURL('image/jpeg', .8)); }; img.src = r.result; }; r.readAsDataURL(file); }
+  function confirmReset() {
+    var m = P.modal('<div class="stack" style="text-align:center"><h2 style="font-size:24px">Restaurar a demonstração?</h2><p style="margin:0;color:#6E5A45">Apaga contas, compras e peças novas salvas neste navegador. As peças de exemplo voltam.</p><button class="btn" id="yes">Restaurar</button></div>');
+    document.getElementById('yes').onclick = function () { Object.keys(localStorage).filter(function (k) { return k.indexOf('pz-') === 0; }).forEach(function (k) { localStorage.removeItem(k); }); location.href = 'index.html'; };
+    return false;
+  }
+  draw();
+})();
+</script>
+</body>
+</html>

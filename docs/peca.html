@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Peça · Pirulecos</title>
+<meta name="theme-color" content="#FFF9EF">
+<link rel="icon" href="assets/icone-32.png"><link rel="apple-touch-icon" href="assets/icone-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="wrap" id="root"></main>
+<script src="app.js"></script>
+<script>
+(function () {
+  var P = PZ; P.header(); P.footer();
+  var id = new URLSearchParams(location.search).get('id'), p = P.byId(id), root = document.getElementById('root');
+  if (!p) { root.innerHTML = '<div class="box" style="margin:48px 0;text-align:center"><h1 class="page-title">Peça não encontrada</h1><p class="lead">Ela pode ter saído da vitrine.</p><a class="btn" href="index.html">Ver a vitrine</a></div>'; return; }
+  document.title = p.name + ' · Pirulecos';
+  var shipSel = null, opts = null;
+  function draw() {
+    p = P.byId(id);
+    var inC = P.inCart(id);
+    root.innerHTML =
+      '<nav class="crumbs" aria-label="Você está em"><a href="index.html">Início</a> / <a href="index.html?cat=' + encodeURIComponent(p.cat) + '#vitrine">' + P.esc(p.cat) + '</a> / ' + P.esc(p.name) + '</nav>' +
+      '<div class="pd">' +
+      '<div class="pd-art rv" style="background:' + P.tintBg(p) + '"><div class="art" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%' + (p.sold ? ';filter:grayscale(1);opacity:.4' : '') + '">' + P.art(p, 260) + '</div>' + (p.sold ? '<span class="stamp" style="font-size:34px">VENDIDO</span>' : '') + '</div>' +
+      '<div class="stack">' +
+      '<div class="rv" style="display:flex;gap:8px;flex-wrap:wrap"><span class="tag" style="background:#fff;box-shadow:inset 0 0 0 2px var(--line)">Peça única</span><span class="tag" style="background:var(--green-t);color:var(--green)">' + P.esc(p.cond) + '</span></div>' +
+      '<div class="rv" data-d=".05"><h1>' + P.esc(p.name) + '</h1><div style="color:#6E5A45">Tamanho ' + P.esc(p.size) + ' · ' + P.esc(p.cat) + '</div></div>' +
+      '<div class="big rv" data-d=".1">' + P.money(p.price) + '</div>' +
+      (p.sold ? '<div class="note rv" style="background:var(--line)">Essa peça já foi para casa nova. Que tal ver as outras do mesmo tamanho?</div><a class="btn rv" href="index.html#vitrine">Ver peças parecidas</a>' :
+        '<div class="note rv">' + P.I.clock + '<span><b>Na sacola, ela fica reservada para você por 15 minutos.</b> Depois volta para a vitrine.</span></div>' +
+        '<button class="btn rv' + (inC ? ' incart' : '') + '" id="add" style="min-height:58px;font-size:18px">' + (inC ? P.I.check + ' Está na sua sacola · finalizar' : 'Quero essa peça') + '</button>') +
+      '<div class="box rv"><h2 style="font-family:Nunito,system-ui,sans-serif;font-weight:800;font-size:17px;margin-bottom:10px">Sobre a peça</h2><p style="margin:0 0 14px;color:#6E5A45">' + P.esc(p.desc || 'Peça revisada e higienizada.') + '</p>' +
+      (p.m1 ? '<div class="measures"><div><small>Busto</small><b>' + p.m1 + '</b></div><div><small>Comprimento</small><b>' + p.m2 + '</b></div><div><small>Cintura</small><b>' + p.m3 + '</b></div></div>' : '') + '</div>' +
+      '<div class="box rv"><h2 style="font-family:Nunito,system-ui,sans-serif;font-weight:800;font-size:17px;margin-bottom:10px">Calcular frete</h2>' +
+      '<form id="ship" style="display:flex;gap:8px"><label class="sr" for="cep">CEP</label><input class="input" id="cep" inputmode="numeric" placeholder="00000-000" maxlength="9" value="' + (P.LS.get('cep', '') || '') + '"><button class="btn dark" type="submit">Calcular</button></form>' +
+      '<div class="ship-opts" id="opts"></div><p style="margin:10px 0 0;font-size:13px;color:#6E5A45">Valores simulados no protótipo. No site real, o cálculo vem do Melhor Envio.</p></div>' +
+      '</div></div>';
+    P.reveal(root);
+    var add = document.getElementById('add');
+    if (add) add.onclick = function () { if (P.inCart(id)) { location.href = 'sacola.html'; return; } P.addToCart(id, add); add.classList.add('incart'); add.innerHTML = P.I.check + ' Está na sua sacola · finalizar'; };
+    var cep = document.getElementById('cep');
+    cep.oninput = function () { var d = cep.value.replace(/\D/g, '').slice(0, 8); cep.value = d.length > 5 ? d.slice(0, 5) + '-' + d.slice(5) : d; };
+    document.getElementById('ship').onsubmit = function (e) {
+      e.preventDefault(); var o = P.frete(cep.value, 1), box = document.getElementById('opts');
+      if (!o) { box.innerHTML = '<div class="err">Digite um CEP com 8 números.</div>'; return; }
+      P.LS.set('cep', cep.value);
+      box.innerHTML = o.map(function (x, i) { return '<div class="opt" style="animation:riseIn .35s ' + (i * .08) + 's both;cursor:default"><span class="grow"><b>' + x.name + '</b> · ' + x.days + '</span><b>' + P.money(x.price) + '</b></div>'; }).join('');
+    };
+    if (cep.value) document.getElementById('ship').requestSubmit();
+  }
+  draw();
+})();
+</script>
+</body>
+</html>

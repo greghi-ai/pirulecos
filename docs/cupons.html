@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cupons · Pirulecos</title>
+<meta name="theme-color" content="#FFF9EF">
+<link rel="icon" href="assets/icone-32.png"><link rel="apple-touch-icon" href="assets/icone-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="wrap" id="root"></main>
+<script src="app.js"></script>
+<script>
+(function () {
+  var P = PZ; P.header(); P.footer();
+  var u = P.me(), root = document.getElementById('root');
+  var pub = [
+    { l: 'Frete<br>grátis', bg: 'var(--blue-t)', c: 'var(--blue)', t: 'Acima de R$ 150', d: 'No PAC, para todo o Brasil.', code: 'FRETEPIRU' },
+    { l: '15%', bg: 'var(--green-t)', c: 'var(--green)', t: 'Leve 3 peças', d: 'Monte o kit da estação.', code: 'KIT3' }
+  ];
+  var mine = u ? P.coupons(u).filter(function (c) { return c.mine; }) : [];
+  var first = u ? mine.filter(function (c) { return c.code === 'BEMVINDO10'; })[0] : null;
+  function t(x, i) { return '<div class="ticket rv" data-d="' + (i * .08) + '"><div class="l" style="background:' + x.bg + ';color:' + x.c + '">' + x.l + '</div><div class="r"><b style="font-size:17px">' + x.t + '</b><small style="color:#6E5A45">' + x.d + '</small>' + (x.code ? '<button class="codebtn" data-copy="' + x.code + '">' + x.code + ' · copiar</button>' : x.extra || '') + '</div></div>'; }
+  var top = [{ l: '10%', bg: 'var(--orange-t)', c: '#8A3A06', t: 'Primeira compra', d: u ? (first ? 'Liberado na sua conta.' : 'Você já usou esse cupom.') : 'Para quem cria a conta.', code: first ? 'BEMVINDO10' : null, extra: u ? '' : '<a class="btn sm" href="conta.html#criar" style="align-self:flex-start">Criar conta e liberar</a>' }].concat(pub);
+  root.innerHTML = '<h1 class="page-title rv">Cupons</h1><p class="lead rv">Toque no código para copiar. Ele já vai aplicado na sua sacola.</p>' +
+    '<div class="tickets">' + top.map(t).join('') + '</div>' +
+    '<section class="band rv" style="margin-top:48px"><div><h2>' + (u ? 'Seus cupons especiais' : 'Só para quem tem conta') + '</h2><p style="margin:0;color:#5E3A49">' + (u ? 'Aparecem aqui e na sua conta na data certa.' : 'Esses aparecem sozinhos na data certa.') + '</p></div>' + (u ? '<a class="btn pink" href="conta.html">Ver minha conta</a>' : '<a class="btn pink" href="conta.html#criar">Entrar ou criar conta</a>') +
+    '<div class="tickets" style="width:100%">' + [
+      { l: P.I.gift, bg: '#fff', c: 'var(--pink)', t: 'Aniversário da criança', d: 'Cupom de 15% liberado 30 dias antes do aniversário.' },
+      { l: '♡', bg: '#fff', c: 'var(--pink)', t: 'Dia das Crianças', d: 'Desconto exclusivo em outubro.' },
+      { l: '★', bg: '#fff', c: 'var(--pink)', t: 'Cliente de casa', d: 'A cada 5 compras, um cupom de presente.' }
+    ].map(t).join('') + '</div></section>';
+  P.reveal(root);
+  P.$$('[data-copy]', root).forEach(function (b) { b.onclick = function () { try { navigator.clipboard.writeText(b.dataset.copy); } catch (e) {} P.LS.set('coupon', b.dataset.copy); b.textContent = 'Copiado!'; b.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.08)' }, { transform: 'scale(1)' }], { duration: 300 }); P.toast('Cupom ' + b.dataset.copy + ' copiado e aplicado na sacola'); }; });
+})();
+</script>
+</body>
+</html>
