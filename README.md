@@ -6,7 +6,8 @@ Loja online da Pirulecos, um brechó infantil em que **cada peça é única**.
 
 ## Links
 
-- **Protótipo no ar:** https://greghi-ai.github.io/pirulecos/
+- **Site (protótipo no ar):** https://greghi-ai.github.io/pirulecos/
+- **Lista de telas:** https://greghi-ai.github.io/pirulecos/telas.html
 - **Telas (design):** https://claude.ai/artifact/1emumT97w1mJPCJEMpH23Z
 - **Apresentação para a cliente:** https://claude.ai/artifact/GEfmPU3nCr1Ma1aBnez7LN
 
