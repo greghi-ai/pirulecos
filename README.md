@@ -2,10 +2,11 @@
 
 Loja online da Pirulecos, um brechó infantil em que **cada peça é única**.
 
-![Logo Pirulecos](assets/logo.png)
+![Logo Pirulecos](assets/logo-pirulecos.webp)
 
 ## Links
 
+- **Protótipo no ar:** https://greghi-ai.github.io/pirulecos/
 - **Telas (design):** https://claude.ai/artifact/1emumT97w1mJPCJEMpH23Z
 - **Apresentação para a cliente:** https://claude.ai/artifact/GEfmPU3nCr1Ma1aBnez7LN
 
@@ -46,10 +47,24 @@ Detalhes das regras e decisões: [docs/plano.md](docs/plano.md).
 assets/          logo e imagens da marca
 design/telas/    telas do design (arquivos .dc.html do canvas)
 apresentacao/    slides da proposta para a cliente
-docs/            plano e decisões do projeto
+docs/            protótipo publicado no GitHub Pages + plano.md
 ```
 
 O código do site entra em seguida, na raiz do repositório.
+
+## Logo
+
+Em `assets/`, todas com fundo transparente:
+
+| Arquivo | Uso |
+|---|---|
+| `logo-pirulecos.png` / `.webp` / `.svg` | Logo completa |
+| `logo-nome.*` | Só o nome, para o topo do site |
+| `logo-leao.*` | Só o leão, para ícone e redes sociais |
+| `logo-ilustracao.*` | Leão e pirulitos, sem o nome |
+| `icone-32/180/192/512.png` | Favicon e ícone de celular |
+
+O `.svg` é vetor: o nome fica perfeito em qualquer tamanho, e o leão fica com acabamento de ilustração chapada. Para o site, use `.webp`, que é mais leve e mantém o sombreado.
 
 ## Identidade visual
 
