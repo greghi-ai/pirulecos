@@ -15,7 +15,7 @@ Loja online da Pirulecos, um brechó infantil em que **cada peça é única**.
 - Vitrine com filtro por tamanho (RN a 14 anos)
 - Peça vendida aparece como **VENDIDO** sozinha quando o pagamento é aprovado
 - Reserva de 15 minutos no carrinho, para ninguém comprar a mesma peça
-- Pagamento por Pix e cartão (Mercado Pago)
+- Pagamento por Pix e cartão (InfinitePay)
 - Frete PAC e SEDEX pelos Correios (Melhor Envio)
 - Página de cupons: públicos e exclusivos para quem tem conta
 - Conta da família com cadastro da criança (nome, tamanho, aniversário)
@@ -32,7 +32,9 @@ Site estático, sem servidor: tudo fica salvo no navegador de quem usa (localSto
 |---|---|
 | `index.html` | Vitrine com filtro por tamanho e categoria, busca, convite de cadastro na 1ª visita |
 | `peca.html?id=` | Página da peça, reserva na sacola, cálculo de frete (simulado) |
-| `sacola.html` | Reserva de 15 min por peça, cupom, PAC/SEDEX, Pix ou cartão, pedido confirmado e peça vira VENDIDO |
+| `sacola.html` | Reserva de 15 min por peça, cupom, PAC/SEDEX e botão "Ir para o pagamento" |
+| `pagamento.html` | Exemplo da etapa de pagamento (no site real é o Checkout Integrado da InfinitePay): Pix ou cartão em até 12x |
+| `obrigado.html` | Pedido confirmado: pagamento aprovado, peça VENDIDA, etiqueta gerada, rastreio |
 | `conta.html` | Criar conta, entrar, crianças, contagem para o aniversário, cupons e pedidos |
 | `cupons.html` | Cupons públicos e exclusivos |
 | `loja.html` | Área da loja: cadastrar peça com foto, pedidos, etiqueta, restaurar demonstração |
@@ -45,7 +47,7 @@ Cupons de teste: `BEMVINDO10` (conta nova), `FRETEPIRU` (acima de R$ 150, PAC), 
 |---|---|
 | Site | Next.js (App Router) + TypeScript |
 | Banco, login e fotos | Supabase (Postgres, Auth, Storage) |
-| Pagamento | Mercado Pago (Pix + cartão, webhook) |
+| Pagamento | InfinitePay Checkout Integrado (Pix + cartão até 12x, webhook + payment_check) |
 | Frete e etiquetas | Melhor Envio (Correios) |
 | E-mails | Resend |
 | Hospedagem | Vercel |

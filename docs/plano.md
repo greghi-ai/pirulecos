@@ -4,7 +4,7 @@
 
 - Toda peça tem estoque 1. Estados: `disponivel` → `reservada` → `vendida`.
 - Ao entrar na sacola, a peça fica `reservada` por 15 minutos para aquela cliente. Se o prazo vence sem pagamento, volta a `disponivel` sozinha.
-- O webhook do Mercado Pago confirma o pagamento e marca a peça como `vendida`.
+- A InfinitePay (Checkout Integrado) avisa o site por webhook; o site confirma com `payment_check` antes de marcar a peça como `vendida`.
 - A peça vendida **continua visível** na vitrine, em cinza, com a faixa "VENDIDO".
 
 ## Pop-up de cadastro (primeira visita)
@@ -38,7 +38,7 @@ Um cupom por compra.
 
 ## Pagamento e envio
 
-- Mercado Pago: Pix (aprovação imediata) e cartão parcelado.
+- InfinitePay Checkout Integrado: Pix (taxa zero, aprovação imediata) e cartão em até 12x. A cliente paga na página segura da InfinitePay e volta para o site.
 - Melhor Envio: cotação de PAC e SEDEX no carrinho e etiqueta mais barata que no balcão. A dona imprime e posta.
 - Cada peça tem um "pacote" (pequeno, médio, grande) com peso e medidas para o frete.
 

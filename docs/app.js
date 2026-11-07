@@ -135,6 +135,20 @@
     return { ok: c };
   }
 
+
+  /* pedido: cria pendente (antes de ir para o pagamento) e conclui (depois de aprovado) */
+  function createPending(k, coupon) {
+    var u = me(); var o = { n: 1000 + Math.floor(Math.random() * 9000), at: Date.now(), items: k.items.map(function (p) { return { id: p.id, name: p.name, price: p.price, tint: p.tint, kind: p.kind, photo: p.photo || null, size: p.size }; }), sub: k.sub, disc: k.disc, shipCost: k.shipCost, total: k.total, ship: k.ship.name, shipDays: k.ship.days, coupon: coupon || null, who: u.name, email: u.email };
+    LS.set('pending', o); return o;
+  }
+  function finishOrder(method, inst) {
+    var o = LS.get('pending', null), u = me(); if (!o || !u) return null;
+    markSold(o.items.map(function (i) { return i.id; })); LS.set('cart', []); LS.set('coupon', ''); LS.set('pending', null);
+    o.pay = method === 'pix' ? 'Pix' : 'Cartão ' + (inst || 1) + 'x'; o.status = 'Pagamento aprovado';
+    u.orders = [o].concat(u.orders || []); if (o.coupon && o.coupon.mine) u.used.push(o.coupon.code);
+    saveMe(u); LS.set('orders', [o].concat(LS.get('orders', []))); LS.set('last-order', o.n); return o;
+  }
+
   /* frete (simulado) */
   function frete(cep, items) {
     var d = String(cep).replace(/\D/g, ''); if (d.length !== 8) return null;
@@ -241,5 +255,5 @@
   window.PZ = { $: $, $$: $$, LS: LS, I: I, money: money, esc: esc, art: art, tintBg: tintBg, SIZES: SIZES, groupOf: groupOf, products: products, byId: byId, markSold: markSold,
     cart: cart, inCart: inCart, addToCart: addToCart, removeFromCart: removeFromCart, me: me, saveMe: saveMe, signup: signup, login: login, logout: logout,
     daysToBirthday: daysToBirthday, ageNext: ageNext, coupons: coupons, checkCoupon: checkCoupon, frete: frete, header: header, footer: footer, updateBadge: updateBadge,
-    toast: toast, confetti: confetti, reveal: reveal, modal: modal, card: card, bindAdd: bindAdd, TINTS: TINTS, BASE: BASE };
+    toast: toast, confetti: confetti, createPending: createPending, finishOrder: finishOrder, reveal: reveal, modal: modal, card: card, bindAdd: bindAdd, TINTS: TINTS, BASE: BASE };
 })();

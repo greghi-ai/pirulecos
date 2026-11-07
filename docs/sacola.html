@@ -34,7 +34,7 @@
       root.innerHTML = '<div style="text-align:center;padding:64px 0" class="rv"><img src="assets/logo-ilustracao.webp" alt="" style="width:220px;margin:0 auto 16px;animation:floaty 5s ease-in-out infinite"><h1 class="page-title" style="margin-top:0">Sua sacola está vazia</h1><p class="lead">As peças que você escolher ficam reservadas por 15 minutos.</p><a class="btn" href="index.html#vitrine">Ver o que chegou</a></div>';
       P.reveal(root); return;
     }
-    root.innerHTML = '<h1 class="page-title rv">Sua sacola</h1><p class="lead rv">Cada peça fica reservada para você enquanto o relógio corre.</p>' +
+    root.innerHTML = steps(1) + '<h1 class="page-title rv" style="margin-top:16px">Sua sacola</h1><p class="lead rv">Cada peça fica reservada para você enquanto o relógio corre.</p>' +
       '<div class="bag"><div class="stack">' +
       '<div class="box rv">' + k.items.map(function (p) {
         return '<div class="citem"><a class="thumb" href="peca.html?id=' + p.id + '" style="background:' + P.tintBg(p) + '">' + P.art(p, 48) + '</a>' +
@@ -46,9 +46,7 @@
       (k.opts ? '<div class="ship-opts" role="radiogroup" aria-label="Forma de envio">' + k.opts.map(function (o) { return '<button type="button" role="radio" aria-checked="' + (o.id === st.ship) + '" class="opt' + (o.id === st.ship ? ' on' : '') + '" data-ship="' + o.id + '"><span class="dot"></span><span class="grow"><b>' + o.name + '</b> · ' + o.days + '</span><b>' + P.money(o.price) + '</b></button>'; }).join('') + '</div>' : '<p style="margin:10px 0 0;color:#6E5A45;font-size:14px">Digite o CEP para ver PAC e SEDEX.</p>') +
       '</div>' +
       '<div class="box rv"><h2 style="font-family:Nunito,system-ui,sans-serif;font-weight:800;font-size:18px;margin-bottom:12px">Pagamento</h2>' +
-      '<div class="tabs" role="tablist"><button class="chip' + (st.pay === 'pix' ? ' on' : '') + '" role="tab" aria-selected="' + (st.pay === 'pix') + '" data-pay="pix">Pix</button><button class="chip' + (st.pay === 'card' ? ' on' : '') + '" role="tab" aria-selected="' + (st.pay === 'card') + '" data-pay="card">Cartão de crédito</button></div>' +
-      (st.pay === 'pix' ? '<div class="note" style="background:var(--green-t)">O QR Code aparece ao finalizar. Assim que o Pix cai, a peça é sua e sai da vitrine.</div>' :
-        '<div class="stack"><div class="field"><label for="cn">Número do cartão</label><input class="input" id="cn" inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="19"></div><div class="row2"><div class="field"><label for="cv">Validade</label><input class="input" id="cv" placeholder="MM/AA" maxlength="5"></div><div class="field"><label for="cc">CVV</label><input class="input" id="cc" inputmode="numeric" placeholder="123" maxlength="4"></div></div><div class="field"><label for="cp">Parcelas</label><select class="input" id="cp"><option>1x sem juros</option><option>2x sem juros</option><option>3x sem juros</option></select></div></div>') +
+      '<div class="note" style="background:var(--green-t);align-items:flex-start"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2B6E33" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Ao tocar em <b>Ir para o pagamento</b>, você vai para a página segura da <b>InfinitePay</b> e escolhe lá: <b>Pix</b> ou <b>cartão em até 12x</b>. Depois de pagar, volta para cá com o pedido confirmado.</span></div>' +
       '</div></div>' +
       '<aside class="box rv" style="position:sticky;top:90px"><h2 style="font-family:Nunito,system-ui,sans-serif;font-weight:800;font-size:18px;margin-bottom:12px">Resumo</h2>' +
       '<form id="cpf" class="field" style="margin-bottom:14px"><label for="cup">Cupom</label><div style="display:flex;gap:8px"><input class="input" id="cup" value="' + P.esc(st.coupon) + '" placeholder="Ex.: BEMVINDO10" style="text-transform:uppercase;font-weight:800;letter-spacing:1px"><button class="btn dark" type="submit">' + (k.cp.ok ? 'Trocar' : 'Aplicar') + '</button></div>' +
@@ -59,18 +57,15 @@
       '<div><span>Frete' + (k.ship ? ' (' + k.ship.name + ')' : '') + '</span><span>' + (k.ship ? (k.shipCost ? P.money(k.shipCost) : 'Grátis') : '—') + '</span></div>' +
       '<div class="tot"><span>Total</span><span>' + P.money(k.total) + '</span></div></div>' +
       '<div class="err" id="ferr" style="margin-top:10px"></div>' +
-      '<button class="btn block" id="go" style="min-height:56px;font-size:17px">' + (st.pay === 'pix' ? 'Gerar Pix' : 'Pagar com cartão') + '</button>' +
-      '<p style="margin:12px 0 0;font-size:13px;color:#6E5A45;text-align:center">Pagamento pelo Mercado Pago. Você tem 7 dias para desistir.</p></aside></div>';
+      '<button class="btn block" id="go" style="min-height:56px;font-size:17px">Ir para o pagamento</button>' +
+      '<p style="margin:12px 0 0;font-size:13px;color:#6E5A45;text-align:center">Pagamento seguro pela InfinitePay. Você tem 7 dias para desistir.</p></aside></div>';
     P.reveal(root);
     P.$$('[data-rm]', root).forEach(function (b) { b.onclick = function () { var row = b.closest('.citem'); row.animate([{ opacity: 1 }, { opacity: 0, transform: 'translateX(40px)' }], { duration: 250 }).onfinish = function () { P.removeFromCart(b.dataset.rm); draw(); }; }; });
     P.$$('[data-ship]', root).forEach(function (b) { b.onclick = function () { st.ship = b.dataset.ship; draw(); }; });
-    P.$$('[data-pay]', root).forEach(function (b) { b.onclick = function () { st.pay = b.dataset.pay; draw(); }; });
     var cep = document.getElementById('cep');
     cep.oninput = function () { var d = cep.value.replace(/\D/g, '').slice(0, 8); cep.value = d.length > 5 ? d.slice(0, 5) + '-' + d.slice(5) : d; };
     document.getElementById('cepf').onsubmit = function (e) { e.preventDefault(); st.cep = cep.value; P.LS.set('cep', st.cep); draw(); };
     document.getElementById('cpf').onsubmit = function (e) { e.preventDefault(); st.coupon = document.getElementById('cup').value.trim().toUpperCase(); P.LS.set('coupon', st.coupon); draw(); };
-    var cn = document.getElementById('cn'); if (cn) cn.oninput = function () { cn.value = cn.value.replace(/\D/g, '').slice(0, 16).replace(/(\d{4})(?=\d)/g, '$1 '); };
-    var cv = document.getElementById('cv'); if (cv) cv.oninput = function () { var d = cv.value.replace(/\D/g, '').slice(0, 4); cv.value = d.length > 2 ? d.slice(0, 2) + '/' + d.slice(2) : d; };
     document.getElementById('go').onclick = checkout;
   }
   function tick() {
@@ -82,44 +77,14 @@
     if (any) { draw(); P.updateBadge(); }
   }
   setInterval(tick, 1000);
-  function qr() {
-    var s = '', n = 25, seed = Date.now() % 9973;
-    var rnd = function () { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
-    for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) {
-      var f = (x < 7 && y < 7) || (x > 17 && y < 7) || (x < 7 && y > 17);
-      var on = f ? ((x % 6 === 0 || y % 6 === 0 || (x > 17 && (x - 18) % 6 === 0) || (y > 17 && (y - 18) % 6 === 0)) || ((x % 18 >= 2 && x % 18 <= 4) && (y % 18 >= 2 && y % 18 <= 4))) : rnd() > .5;
-      if (on) s += '<rect x="' + x + '" y="' + y + '" width="1" height="1"/>';
-    }
-    return '<svg viewBox="0 0 25 25" width="100%" height="100%" fill="#3B2A1A" shape-rendering="crispEdges" role="img" aria-label="QR Code Pix de exemplo">' + s + '</svg>';
-  }
+  function steps(n) { var L = ['Sacola', 'Pagamento', 'Confirmação']; return '<div class="steps rv" aria-label="Etapas da compra">' + L.map(function (l, i) { var c = i + 1 < n ? ' done' : (i + 1 === n ? ' on' : ''); return (i ? '<span class="step-line"></span>' : '') + '<span class="step' + c + '"><i>' + (i + 1 < n ? '✓' : i + 1) + '</i>' + l + '</span>'; }).join('') + '</div>'; }
   function checkout() {
     var k = calc(), err = document.getElementById('ferr');
     if (!k.u) { err.innerHTML = 'Para finalizar, entre ou crie sua conta. Leva 1 minuto. <a href="conta.html?next=sacola.html">Entrar ou criar conta</a>'; return; }
     if (!k.ship) { err.textContent = 'Digite seu CEP e escolha PAC ou SEDEX.'; document.getElementById('cep').focus(); return; }
-    if (st.pay === 'card') {
-      var cn = document.getElementById('cn').value.replace(/\D/g, ''), cv = document.getElementById('cv').value, cc = document.getElementById('cc').value;
-      if (cn.length < 13 || !/^\d\d\/\d\d$/.test(cv) || cc.length < 3) { err.textContent = 'Confira os dados do cartão.'; return; }
-      var b = document.getElementById('go'); b.disabled = true; b.textContent = 'Processando…';
-      setTimeout(function () { approve(k); }, 1400); return;
-    }
-    var m = P.modal('<div style="text-align:center;display:flex;flex-direction:column;gap:14px"><h2 style="font-size:26px">Pague com Pix</h2><p style="margin:0;color:#6E5A45">Abra o app do banco e leia o QR Code. Total: <b style="color:#3B2A1A">' + P.money(k.total) + '</b></p><div class="qr">' + qr() + '</div>' +
-      '<button class="btn ghost" id="copy">Copiar código Pix</button><div class="note" style="justify-content:center">' + P.I.clock + ' Aguardando pagamento…</div>' +
-      '<button class="btn" id="paid">Simular pagamento aprovado</button><small style="color:#6E5A45">Protótipo: nenhum valor é cobrado.</small></div>');
-    document.getElementById('copy').onclick = function () { try { navigator.clipboard.writeText('00020126PIX-PIRULECOS-EXEMPLO'); } catch (e) {} P.toast('Código Pix copiado'); };
-    document.getElementById('paid').onclick = function () { m.close(); approve(k); };
-  }
-  function approve(k) {
-    var u = P.me(), ids = k.items.map(function (p) { return p.id; });
-    P.markSold(ids); P.LS.set('cart', []); P.LS.set('coupon', '');
-    var order = { n: 1000 + Math.floor(Math.random() * 9000), at: Date.now(), items: k.items.map(function (p) { return { id: p.id, name: p.name, price: p.price }; }), total: k.total, ship: k.ship.name, pay: st.pay === 'pix' ? 'Pix' : 'Cartão', status: 'Pagamento aprovado', who: u.name, email: u.email };
-    u.orders = [order].concat(u.orders || []);
-    if (k.cp.ok && k.cp.ok.mine) u.used.push(k.cp.ok.code);
-    P.saveMe(u); P.LS.set('orders', [order].concat(P.LS.get('orders', [])));
-    P.updateBadge(); P.confetti();
-    var m = P.modal('<div style="text-align:center;display:flex;flex-direction:column;gap:14px;align-items:center"><div style="width:80px;height:80px;border-radius:50%;background:var(--green-t);color:var(--green);display:flex;align-items:center;justify-content:center;animation:bump .6s"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg></div>' +
-      '<h2 style="font-size:28px">Pedido #' + order.n + ' confirmado!</h2><p style="margin:0;color:#6E5A45">Pagamento aprovado. ' + (ids.length > 1 ? 'As peças já aparecem' : 'A peça já aparece') + ' como <b>vendida</b> na vitrine e a etiqueta dos Correios foi gerada para a loja.</p>' +
-      '<a class="btn block" href="conta.html">Acompanhar meu pedido</a><a class="link" href="index.html#vitrine">Voltar para a vitrine</a></div>', function () { location.href = 'index.html#vitrine'; });
-    draw();
+    var o = P.createPending(k, k.cp.ok || null);
+    var ov = document.createElement('div'); ov.className = 'leaving'; ov.innerHTML = '<div class="spin"></div><b style="font-size:20px">Levando você para o pagamento seguro…</b><small style="color:#6E5A45">Pedido #' + o.n + ' · ' + P.money(o.total) + '</small>';
+    document.body.appendChild(ov); setTimeout(function () { location.href = 'pagamento.html'; }, 1300);
   }
   draw();
 })();

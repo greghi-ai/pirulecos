@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pedido confirmado · Pirulecos</title>
+<meta name="theme-color" content="#FFF9EF">
+<link rel="icon" href="assets/icone-32.png"><link rel="apple-touch-icon" href="assets/icone-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="wrap" id="root" style="max-width:760px"></main>
+<script src="app.js"></script>
+<script>
+(function () {
+  var P = PZ; P.header(); P.footer();
+  var n = Number(new URLSearchParams(location.search).get('n')), u = P.me(), root = document.getElementById('root');
+  var o = u && (u.orders || []).filter(function (x) { return x.n === n; })[0];
+  if (!o) { root.innerHTML = '<div class="box" style="margin:48px 0;text-align:center"><h1 class="page-title">Pedido não encontrado</h1><a class="btn" href="index.html">Voltar para a vitrine</a></div>'; return; }
+  var steps = '<div class="steps" aria-label="Etapas da compra"><span class="step done"><i>✓</i>Sacola</span><span class="step-line"></span><span class="step done"><i>✓</i>Pagamento</span><span class="step-line"></span><span class="step on"><i>3</i>Confirmação</span></div>';
+  var ok = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l4 4 10-10"/></svg>';
+  var tl = [
+    [ok, 'Pagamento aprovado', o.pay + ' · ' + P.money(o.total) + '. A InfinitePay avisa o site na hora.', ''],
+    [ok, (o.items.length > 1 ? 'Peças marcadas' : 'Peça marcada') + ' como VENDIDA', 'Sai da vitrine sozinha, ninguém mais consegue comprar.', ''],
+    [ok, 'Etiqueta dos Correios gerada', o.ship + ' · ' + (o.shipDays || '') + '. A loja só imprime e posta.', ''],
+    [P.I.clock, 'Você recebe o rastreio por e-mail', 'Assim que a Pirulecos postar o pacote.', ' wait']
+  ];
+  root.innerHTML = steps +
+    '<div style="text-align:center;margin:32px 0 8px"><div style="width:88px;height:88px;border-radius:50%;background:var(--green-t);color:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto;animation:bump .7s .2s both"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l4 4 10-10"/></svg></div>' +
+    '<h1 class="page-title" style="margin-top:16px">Pedido #' + o.n + ' confirmado!</h1><p class="lead">Obrigada, ' + P.esc(u.name.split(' ')[0]) + '. Olha o que já aconteceu sozinho:</p></div>' +
+    '<div class="box"><div class="timeline">' + tl.map(function (t, i) { return '<div class="tl' + t[3] + '" style="animation-delay:' + (0.5 + i * 0.45) + 's"><span class="ic">' + t[0] + '</span><div><b>' + t[1] + '</b><br><small style="color:#6E5A45">' + t[2] + '</small></div></div>'; }).join('') + '</div></div>' +
+    '<div class="box" style="margin-top:16px">' + o.items.map(function (i) { return '<div class="citem" style="animation:none"><span class="thumb" style="background:' + P.tintBg(i) + '">' + P.art(i, 48) + '</span><div style="flex:1"><b>' + P.esc(i.name) + '</b><br><small style="color:#6E5A45">Tam. ' + P.esc(i.size || '') + '</small></div><b>' + P.money(i.price) + '</b></div>'; }).join('') + '</div>' +
+    '<div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:24px 0"><a class="btn" href="conta.html">Acompanhar meu pedido</a><a class="btn ghost" href="index.html#vitrine">Voltar para a vitrine</a></div>';
+  setTimeout(P.confetti, 600);
+})();
+</script>
+</body>
+</html>
